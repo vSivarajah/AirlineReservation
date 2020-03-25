@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"github.com/vSivarajah/AirlineReservation/app"
+)
 
 func main() {
-	fmt.Println("Hello world, this is an airline reservation service")
+	app.StartApplication()
 }
