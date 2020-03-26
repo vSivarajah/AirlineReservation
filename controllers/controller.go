@@ -1,9 +1,8 @@
 package controllers
 
 import (
-	"fmt"
-	"io/ioutil"
 	"log"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 	"github.com/vsivarajah/AirlineReservation/domain"
@@ -17,10 +16,14 @@ func GET(c *gin.Context) {
 }
 
 func Create(c *gin.Context) {
-	body := c.Request.Body
-	value, err := ioutil.ReadAll(body)
-	if err != nil {
-		log.Fatal("cannot read body")
+	details := domain.FlightDetail{}
+	if err := c.ShouldBindJSON(&details); err != nil {
+		log.Println("Invalid json body")
+		return
 	}
-	fmt.Println(string(value))
+	domain.CreateFlightDetails(&details)
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "Created a new flight detail",
+	})
+
 }
