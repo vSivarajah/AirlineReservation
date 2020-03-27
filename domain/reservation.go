@@ -7,27 +7,12 @@ type Reservation struct {
 }
 type Reservations []*Reservation
 
-var reservationDetails = []*Reservation{
-	&Reservation{
-		Id: 1,
-		Passenger: PassengerInfo{
-			FirstName:      "Vignesh",
-			LastName:       "Sivarajah",
-			PassportNumber: 1234567,
-			DateOfBirth:    "201299",
-		},
-		FlightInfo: Flight{
-			FlightNumber:      "BOEING777",
-			OperatingAirlines: "Emirates",
-			SourceAirport:     "Oslo",
-			TargetAirport:     "Cancun",
-		},
-	},
-}
+var reservationDetails = []*Reservation{}
 
 func CreateFlightDetails(reservation *Reservation) {
 	reservationDetails = append(reservationDetails, reservation)
 }
-func GetReservation() Reservations {
+
+func GetReservationDetails() Reservations {
 	return reservationDetails
 }
