@@ -6,6 +6,6 @@ import (
 
 func MapUrls() {
 	router.GET("/test", controllers.GetFlights)
-	router.POST("/create", controllers.Create)
+	router.POST("/create", controllers.CreateReservation)
 	router.GET("/reservations", controllers.GetReservationDetails)
 }
