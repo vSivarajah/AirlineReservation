@@ -1,5 +1,9 @@
 package services
 
+import (
+	"github.com/vsivarajah/AirlineReservation/domain/payments"
+)
+
 var (
 	PaymentService paymentServiceInterface = &paymentService{}
 )
