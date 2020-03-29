@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/vsivarajah/AirlineReservation/domain/payments"
+	payments "github.com/vsivarajah/AirlineReservation/domain/payments"
 	"github.com/vsivarajah/AirlineReservation/domain/reservations"
 
 	"github.com/vsivarajah/AirlineReservation/services"

@@ -1,7 +1,7 @@
 package services
 
 import (
-	"github.com/vsivarajah/AirlineReservation/domain/payments"
+	payments "github.com/vsivarajah/AirlineReservation/domain/payments"
 )
 
 var (
