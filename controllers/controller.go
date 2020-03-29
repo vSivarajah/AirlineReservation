@@ -7,12 +7,14 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/vsivarajah/AirlineReservation/domain"
+	"github.com/vsivarajah/AirlineReservation/domain/payments"
+	"github.com/vsivarajah/AirlineReservation/domain/reservations"
+
 	"github.com/vsivarajah/AirlineReservation/services"
 )
 
 func GetFlights(c *gin.Context) {
-	flights := domain.GetFlights()
+	flights := services.FlightService.GetFlights()
 	fmt.Printf("%T\n", flights)
 	c.JSON(200, gin.H{
 		"message": flights,
@@ -28,14 +30,13 @@ func GetReservationDetails(c *gin.Context) {
 
 func CreateReservation(c *gin.Context) {
 
-	//if domain.DoesFlightExist(sourceairport, targetairport) {
-	details := domain.Reservation{}
+	details := reservations.Reservation{}
 	if err := c.ShouldBindJSON(&details); err != nil {
 		log.Println("Invalid json body")
 		return
 	}
-	if domain.DoesFlightExist(details.FlightInfo.SourceAirport, details.FlightInfo.TargetAirport) {
-		details.FlightInfo.FlightNumber, details.FlightInfo.OperatingAirlines = domain.AssignFlightNumber(details.FlightInfo.SourceAirport, details.FlightInfo.TargetAirport)
+	if services.FlightService.DoesFlightExist(details.FlightInfo.SourceAirport, details.FlightInfo.TargetAirport) {
+		details.FlightInfo.FlightNumber, details.FlightInfo.OperatingAirlines = services.FlightService.AssignFlightNumber(details.FlightInfo.SourceAirport, details.FlightInfo.TargetAirport)
 		details.IsValid = false
 		services.ReservationService.CreateFlightDetails(&details)
 		c.JSON(http.StatusCreated, gin.H{
@@ -50,11 +51,11 @@ func CreateReservation(c *gin.Context) {
 }
 
 func CreatePayment(c *gin.Context) {
-	payment := domain.Payment{}
+	payment := payments.Payment{}
 	if err := c.ShouldBindJSON(&payment); err != nil {
 		log.Println("Invalid json body")
 	}
-	domain.CreatePayment(&payment)
+	services.PaymentService.CreatePayment(&payment)
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "payment successful",
 	})
@@ -62,7 +63,7 @@ func CreatePayment(c *gin.Context) {
 }
 
 func GetPayment(c *gin.Context) {
-	payments := domain.GetPayment()
+	payments := services.PaymentService.GetPayment()
 	c.JSON(200, gin.H{
 		"payment": payments,
 	})
@@ -74,8 +75,8 @@ func UpdateReservation(c *gin.Context) {
 	if err != nil {
 		fmt.Println("Can not convert to int from string")
 	}
-	reservation := domain.Reservation{}
-	paymentList := domain.GetPayment()
+	reservation := reservations.Reservation{}
+	paymentList := services.PaymentService.GetPayment()
 
 	for _, payment := range paymentList {
 		if reservationId == payment.PaymentID {
