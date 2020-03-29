@@ -1,4 +1,4 @@
-package domain
+package passengers
 
 type PassengerInfo struct {
 	FirstName        string `json:"firstname"`

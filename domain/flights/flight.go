@@ -1,4 +1,4 @@
-package domain
+package flights
 
 import (
 	"fmt"
@@ -36,6 +36,7 @@ func DoesFlightExist(sourceairport string, targetairport string) bool {
 	}
 	return false
 }
+
 func AssignFlightNumber(sourceairport string, targetairport string) (string, string) {
 	flights := GetFlights()
 	for _, flight := range flights {

@@ -10,4 +10,5 @@ func MapUrls() {
 	router.GET("/reservations", controllers.GetReservationDetails)
 	router.POST("/payment/pay", controllers.CreatePayment)
 	router.GET("/payments", controllers.GetPayment)
+	router.PUT("/reservation/:id", controllers.UpdateReservation)
 }
