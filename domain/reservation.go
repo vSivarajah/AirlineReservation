@@ -2,8 +2,9 @@ package domain
 
 type Reservation struct {
 	Id         int64         `json:"id"`
+	IsValid    bool          `json:"paymentsuccessful"`
 	Passenger  PassengerInfo `json:"passenger"`
-	FlightInfo Flight        `json:flightinfo`
+	FlightInfo Flight        `json:"flightinfo"`
 }
 type Reservations []*Reservation
 

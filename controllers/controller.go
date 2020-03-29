@@ -33,8 +33,8 @@ func CreateReservation(c *gin.Context) {
 		return
 	}
 	if domain.DoesFlightExist(details.FlightInfo.SourceAirport, details.FlightInfo.TargetAirport) {
-		details.FlightInfo.FlightNumber = "Boeing777"
-		details.FlightInfo.OperatingAirlines = "Emirates"
+		details.FlightInfo.FlightNumber, details.FlightInfo.OperatingAirlines = domain.AssignFlightNumber(details.FlightInfo.SourceAirport, details.FlightInfo.TargetAirport)
+		details.IsValid = false
 		domain.CreateFlightDetails(&details)
 		c.JSON(http.StatusCreated, gin.H{
 			"message": "Created a new flight detail",
