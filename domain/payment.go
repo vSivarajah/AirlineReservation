@@ -1,6 +1,17 @@
 package domain
 
 type Payment struct {
-	PaymentId int `json:"paymentid"`
-	Reservation
+	PaymentID int `json:"paymentid"`
+}
+
+type Payments []*Payment
+
+var PaymentList = []*Payment{}
+
+func CreatePayment(payment *Payment) {
+	PaymentList = append(PaymentList, payment)
+}
+
+func GetPayment() Payments {
+	return PaymentList
 }

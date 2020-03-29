@@ -46,3 +46,22 @@ func CreateReservation(c *gin.Context) {
 	}
 
 }
+
+func CreatePayment(c *gin.Context) {
+	payment := domain.Payment{}
+	if err := c.ShouldBindJSON(&payment); err != nil {
+		log.Println("Invalid json body")
+	}
+	domain.CreatePayment(&payment)
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "payment successful",
+	})
+
+}
+
+func GetPayment(c *gin.Context) {
+	payments := domain.GetPayment()
+	c.JSON(200, gin.H{
+		"payment": payments,
+	})
+}
