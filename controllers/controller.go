@@ -47,6 +47,13 @@ func CreateReservation(c *gin.Context) {
 		details.FlightInfo.FlightNumber, details.FlightInfo.OperatingAirlines = services.FlightService.AssignFlightNumber(details.FlightInfo.SourceAirport, details.FlightInfo.TargetAirport)
 		details.IsValid = false
 
+		if details.FlightInfo.FlightNumber == "full" {
+			c.JSON(http.StatusConflict, gin.H{
+				"message": "Flight is full",
+			})
+			return
+		}
+
 		created := services.ReservationService.CreateFlightDetails(&details)
 		if created {
 			c.JSON(http.StatusCreated, gin.H{
