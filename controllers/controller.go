@@ -100,8 +100,13 @@ func CreatePayment(c *gin.Context) {
 }
 
 func GetPayment(c *gin.Context) {
-	payments := services.PaymentService.GetPayment()
-	c.JSON(200, gin.H{
+	payments, err := services.PaymentService.GetPayment()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Bad request",
+		})
+	}
+	c.JSON(http.StatusOK, gin.H{
 		"payment": payments,
 	})
 }
@@ -113,7 +118,12 @@ func UpdateReservation(c *gin.Context) {
 		fmt.Println("Can not convert to int from string")
 	}
 	reservation := reservations.Reservation{}
-	paymentList := services.PaymentService.GetPayment()
+	paymentList, err := services.PaymentService.GetPayment()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Could not retrieve payments, bad request",
+		})
+	}
 
 	for _, payment := range paymentList {
 		if reservationId == payment.PaymentID {
@@ -122,7 +132,9 @@ func UpdateReservation(c *gin.Context) {
 	}
 	err = services.ReservationService.UpdateReservation(reservationId, &reservation)
 	if err != nil {
-		log.Println("Can not update reservation")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Could not update reservation",
+		})
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"message": "reservation confirmed!",

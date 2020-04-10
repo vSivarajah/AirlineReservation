@@ -24,8 +24,8 @@ func CreatePayment(payment *Payment) (error, bool) {
 
 }
 
-func GetPayment() Payments {
-	return PaymentList
+func GetPayment() (Payments, error) {
+	return PaymentList, nil
 }
 
 func FindPaymentById(id int) (*Payment, int, error) {
