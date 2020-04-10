@@ -54,7 +54,7 @@ func CreateReservation(c *gin.Context) {
 			return
 		}
 
-		created := services.ReservationService.CreateFlightDetails(&details)
+		created := services.ReservationService.CreateReservation(&details)
 		if created {
 			c.JSON(http.StatusCreated, gin.H{
 				"message": "Created a new flight detail",
