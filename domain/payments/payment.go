@@ -17,10 +17,11 @@ func CreatePayment(payment *Payment) (error, bool) {
 	if i != -1 {
 		log.Println("Payment has already been made")
 		return nil, false
+	} else {
+		PaymentList = append(PaymentList, payment)
+		return nil, true
 	}
 
-	PaymentList = append(PaymentList, payment)
-	return nil, true
 }
 
 func GetPayment() Payments {

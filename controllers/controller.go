@@ -77,11 +77,26 @@ func CreatePayment(c *gin.Context) {
 	if err := c.ShouldBindJSON(&payment); err != nil {
 		log.Println("Invalid json body")
 	}
-	services.PaymentService.CreatePayment(&payment)
-	c.JSON(http.StatusCreated, gin.H{
-		"message": "payment successful",
-	})
-
+	err, created := services.PaymentService.CreatePayment(&payment)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "could not process the payment",
+		})
+	}
+	_, i, _ := services.ReservationService.FindReservationById(payment.PaymentID)
+	if i == -1 {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "reservation does not exist",
+		})
+	} else if created {
+		c.JSON(http.StatusCreated, gin.H{
+			"message": "payment successful",
+		})
+	} else {
+		c.JSON(http.StatusConflict, gin.H{
+			"message": "Payment exists",
+		})
+	}
 }
 
 func GetPayment(c *gin.Context) {
