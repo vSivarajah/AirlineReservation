@@ -2,9 +2,10 @@ package controllers
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
+
+	log "github.com/sirupsen/logrus"
 
 	"github.com/gin-gonic/gin"
 	payments "github.com/vsivarajah/AirlineReservation/domain/payments"
@@ -30,14 +31,22 @@ func GetReservationDetails(c *gin.Context) {
 
 func CreateReservation(c *gin.Context) {
 
+	log.Println("Creating new reservation")
+
 	details := reservations.Reservation{}
 	if err := c.ShouldBindJSON(&details); err != nil {
 		log.Println("Invalid json body")
 		return
 	}
+
+	log.WithFields(log.Fields{
+		"json": details,
+	}).Info("message")
+
 	if services.FlightService.DoesFlightExist(details.FlightInfo.SourceAirport, details.FlightInfo.TargetAirport) {
 		details.FlightInfo.FlightNumber, details.FlightInfo.OperatingAirlines = services.FlightService.AssignFlightNumber(details.FlightInfo.SourceAirport, details.FlightInfo.TargetAirport)
 		details.IsValid = false
+
 		services.ReservationService.CreateFlightDetails(&details)
 		c.JSON(http.StatusCreated, gin.H{
 			"message": "Created a new flight detail",
@@ -90,5 +99,28 @@ func UpdateReservation(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "reservation confirmed!",
 	})
+}
 
+func DeleteReservation(c *gin.Context) {
+	id := c.Param("id")
+	reservationId, err := strconv.Atoi(id)
+	if err != nil {
+		fmt.Println("Can not convert to int from string")
+	}
+
+	log.Println(reservationId)
+
+	var i int = 0
+	i = services.ReservationService.DeleteReservation(reservationId)
+	if i != -1 {
+		log.Println("Reservation deleted: ", i)
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Reservation deleted! ",
+		})
+	} else {
+		log.Println("Error: ", err)
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Reservation not found",
+		})
+	}
 }

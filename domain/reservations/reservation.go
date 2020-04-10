@@ -1,6 +1,8 @@
 package reservations
 
 import (
+	"log"
+
 	"github.com/vsivarajah/AirlineReservation/domain/flights"
 	"github.com/vsivarajah/AirlineReservation/domain/passengers"
 )
@@ -41,4 +43,16 @@ func UpdateReservation(id int, r *Reservation) error {
 	value.IsValid = true
 	reservationDetails[pos] = value
 	return nil
+}
+
+func DeleteReservation(id int) int {
+	log.Println("Deleting id: ", id)
+	for i, v := range reservationDetails {
+		if v.Id == id {
+			//Found id, delete it
+			reservationDetails = append(reservationDetails[:i], reservationDetails[i+1:]...)
+			return i
+		}
+	}
+	return -1
 }

@@ -15,6 +15,7 @@ type reservationServiceInterface interface {
 	GetReservationDetails() reservations.Reservations
 	FindReservationById(int) (*reservations.Reservation, int, error)
 	UpdateReservation(int, *reservations.Reservation) error
+	DeleteReservation(int) int
 }
 
 func (s *reservationService) CreateFlightDetails(reservation *reservations.Reservation) {
@@ -31,4 +32,8 @@ func (s *reservationService) FindReservationById(id int) (*reservations.Reservat
 
 func (s *reservationService) UpdateReservation(id int, r *reservations.Reservation) error {
 	return reservations.UpdateReservation(id, r)
+}
+
+func (s *reservationService) DeleteReservation(id int) int {
+	return reservations.DeleteReservation(id)
 }
