@@ -47,10 +47,17 @@ func CreateReservation(c *gin.Context) {
 		details.FlightInfo.FlightNumber, details.FlightInfo.OperatingAirlines = services.FlightService.AssignFlightNumber(details.FlightInfo.SourceAirport, details.FlightInfo.TargetAirport)
 		details.IsValid = false
 
-		services.ReservationService.CreateFlightDetails(&details)
-		c.JSON(http.StatusCreated, gin.H{
-			"message": "Created a new flight detail",
-		})
+		var created bool = false
+		created = services.ReservationService.CreateFlightDetails(&details)
+		if created {
+			c.JSON(http.StatusCreated, gin.H{
+				"message": "Created a new flight detail",
+			})
+		} else {
+			c.JSON(http.StatusConflict, gin.H{
+				"message": "Error, reservation id already exists",
+			})
+		}
 	} else {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": "can not find a flight",

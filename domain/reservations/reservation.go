@@ -17,8 +17,17 @@ type Reservations []*Reservation
 
 var reservationDetails = []*Reservation{}
 
-func CreateFlightDetails(reservation *Reservation) {
-	reservationDetails = append(reservationDetails, reservation)
+func CreateFlightDetails(reservation *Reservation) bool {
+	var i int = 0
+	_, i, _ = FindReservationById(reservation.Id)
+
+	if i != -1 {
+		log.Println("Reservation id exists")
+		return false
+	} else {
+		reservationDetails = append(reservationDetails, reservation)
+		return true
+	}
 }
 
 func GetReservationDetails() Reservations {
@@ -34,6 +43,7 @@ func FindReservationById(id int) (*Reservation, int, error) {
 	}
 	return nil, -1, nil
 }
+
 func UpdateReservation(id int, r *Reservation) error {
 	value, pos, err := FindReservationById(id)
 	if err != nil {
