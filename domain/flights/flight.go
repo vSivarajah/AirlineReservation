@@ -10,6 +10,8 @@ type Flight struct {
 	OperatingAirlines string `json:"operatingairlines"`
 	SourceAirport     string `json:"sourceairport"`
 	TargetAirport     string `json:"targetairport"`
+	MaxSeats          int    `json:"maxseats"`
+	NumSeats          int    `json:"numseats"`
 }
 
 type Flights []*Flight
@@ -20,9 +22,12 @@ var ListFlights = []*Flight{
 		OperatingAirlines: "Emirates",
 		SourceAirport:     "Oslo",
 		TargetAirport:     "Cancun",
+		MaxSeats:          2,
+		NumSeats:          0,
 	},
 }
 
+// GetFlights return list of flights
 func GetFlights() Flights {
 	return ListFlights
 }
@@ -37,11 +42,18 @@ func DoesFlightExist(sourceairport string, targetairport string) bool {
 	return false
 }
 
+// AssignFlightNumber assigns flight to reservation
 func AssignFlightNumber(sourceairport string, targetairport string) (string, string) {
 	flights := GetFlights()
 	for _, flight := range flights {
 		if flight.SourceAirport == sourceairport && flight.TargetAirport == targetairport {
-			return flight.FlightNumber, flight.OperatingAirlines
+			if flight.NumSeats < flight.MaxSeats {
+				flight.NumSeats++
+				return flight.FlightNumber, flight.OperatingAirlines
+			} else {
+				log.Println("Flight is full")
+				return "full", ""
+			}
 		}
 	}
 	value, err := fmt.Println("Can not assign flightnumber as it does not exist")
@@ -49,4 +61,16 @@ func AssignFlightNumber(sourceairport string, targetairport string) (string, str
 		log.Fatal(err)
 	}
 	return "", string(value)
+}
+
+// RemoveReservationFromFlight removes person from flight
+func RemoveReservationFromFlight(flightnumber string) bool {
+	flights := GetFlights()
+	for _, flight := range flights {
+		if flight.FlightNumber == flightnumber {
+			flight.NumSeats--
+			return true
+		}
+	}
+	return false
 }

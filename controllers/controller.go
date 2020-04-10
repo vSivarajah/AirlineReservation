@@ -46,8 +46,15 @@ func CreateReservation(c *gin.Context) {
 	if services.FlightService.DoesFlightExist(details.FlightInfo.SourceAirport, details.FlightInfo.TargetAirport) {
 		details.FlightInfo.FlightNumber, details.FlightInfo.OperatingAirlines = services.FlightService.AssignFlightNumber(details.FlightInfo.SourceAirport, details.FlightInfo.TargetAirport)
 		details.IsValid = false
-		created := false
-		created = services.ReservationService.CreateReservation(&details)
+
+		if details.FlightInfo.FlightNumber == "full" {
+			c.JSON(http.StatusConflict, gin.H{
+				"message": "Flight is full",
+			})
+			return
+		}
+
+		created := services.ReservationService.CreateFlightDetails(&details)
 		if created {
 			c.JSON(http.StatusCreated, gin.H{
 				"message": "Created a new flight detail",
@@ -70,21 +77,10 @@ func CreatePayment(c *gin.Context) {
 	if err := c.ShouldBindJSON(&payment); err != nil {
 		log.Println("Invalid json body")
 	}
-	err, created := services.PaymentService.CreatePayment(&payment)
-	if err != nil {
-		c.JSON(http.StatusConflict, gin.H{
-			"message": "Could not process the payment",
-		})
-	}
-	if created {
-		c.JSON(http.StatusCreated, gin.H{
-			"message": "payment successful",
-		})
-	} else {
-		c.JSON(http.StatusConflict, gin.H{
-			"message": "Payment has already been made",
-		})
-	}
+	services.PaymentService.CreatePayment(&payment)
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "payment successful",
+	})
 
 }
 

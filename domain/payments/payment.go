@@ -2,8 +2,6 @@ package domain
 
 import (
 	"log"
-
-	"github.com/vsivarajah/AirlineReservation/domain/reservations"
 )
 
 type Payment struct {
@@ -21,11 +19,6 @@ func CreatePayment(payment *Payment) (error, bool) {
 		return nil, false
 	}
 
-	_, j, _ := reservations.FindReservationById(payment.PaymentID)
-	if j == -1 {
-		log.Println("Reservation does not exist, it should exist a valid reservation in order to make a payment")
-		return nil, false
-	}
 	PaymentList = append(PaymentList, payment)
 	return nil, true
 }

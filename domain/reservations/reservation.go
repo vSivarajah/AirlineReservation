@@ -60,8 +60,13 @@ func DeleteReservation(id int) int {
 	log.Println("Deleting id: ", id)
 	for i, v := range reservationDetails {
 		if v.Id == id {
-			//Found id, delete it
+			// Found id, delete it
 			reservationDetails = append(reservationDetails[:i], reservationDetails[i+1:]...)
+
+			// Remove passenger from flight
+			flights.RemoveReservationFromFlight(v.FlightInfo.FlightNumber)
+
+			// Return index of reservation
 			return i
 		}
 	}
