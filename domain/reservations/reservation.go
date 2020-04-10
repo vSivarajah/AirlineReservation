@@ -17,9 +17,10 @@ type Reservations []*Reservation
 
 var reservationDetails = []*Reservation{}
 
+// CreateFlightDetails - creates reservation
 func CreateFlightDetails(reservation *Reservation) bool {
-	var i int = 0
-	_, i, _ = FindReservationById(reservation.Id)
+
+	_, i, _ := FindReservationById(reservation.Id)
 
 	if i != -1 {
 		log.Println("Reservation id exists")
