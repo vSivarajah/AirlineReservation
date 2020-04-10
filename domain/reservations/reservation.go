@@ -18,7 +18,7 @@ type Reservations []*Reservation
 var reservationDetails = []*Reservation{}
 
 // CreateFlightDetails - creates reservation
-func CreateFlightDetails(reservation *Reservation) bool {
+func CreateReservation(reservation *Reservation) bool {
 
 	_, i, _ := FindReservationById(reservation.Id)
 

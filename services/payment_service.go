@@ -11,12 +11,12 @@ var (
 type paymentService struct{}
 
 type paymentServiceInterface interface {
-	CreatePayment(*payments.Payment)
+	CreatePayment(*payments.Payment) (error, bool)
 	GetPayment() payments.Payments
 }
 
-func (s *paymentService) CreatePayment(payment *payments.Payment) {
-	payments.CreatePayment(payment)
+func (s *paymentService) CreatePayment(payment *payments.Payment) (error, bool) {
+	return payments.CreatePayment(payment)
 }
 
 func (s *paymentService) GetPayment() payments.Payments {
