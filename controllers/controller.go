@@ -54,7 +54,7 @@ func CreateReservation(c *gin.Context) {
 			return
 		}
 
-		created := services.ReservationService.CreateFlightDetails(&details)
+		created := services.ReservationService.CreateReservation(&details)
 		if created {
 			c.JSON(http.StatusCreated, gin.H{
 				"message": "Created a new flight detail",
@@ -77,16 +77,36 @@ func CreatePayment(c *gin.Context) {
 	if err := c.ShouldBindJSON(&payment); err != nil {
 		log.Println("Invalid json body")
 	}
-	services.PaymentService.CreatePayment(&payment)
-	c.JSON(http.StatusCreated, gin.H{
-		"message": "payment successful",
-	})
-
+	err, created := services.PaymentService.CreatePayment(&payment)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "could not process the payment",
+		})
+	}
+	_, i, _ := services.ReservationService.FindReservationById(payment.PaymentID)
+	if i == -1 {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "reservation does not exist",
+		})
+	} else if created {
+		c.JSON(http.StatusCreated, gin.H{
+			"message": "payment successful",
+		})
+	} else {
+		c.JSON(http.StatusConflict, gin.H{
+			"message": "Payment exists",
+		})
+	}
 }
 
 func GetPayment(c *gin.Context) {
-	payments := services.PaymentService.GetPayment()
-	c.JSON(200, gin.H{
+	payments, err := services.PaymentService.GetPayment()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Bad request",
+		})
+	}
+	c.JSON(http.StatusOK, gin.H{
 		"payment": payments,
 	})
 }
@@ -98,7 +118,12 @@ func UpdateReservation(c *gin.Context) {
 		fmt.Println("Can not convert to int from string")
 	}
 	reservation := reservations.Reservation{}
-	paymentList := services.PaymentService.GetPayment()
+	paymentList, err := services.PaymentService.GetPayment()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Could not retrieve payments, bad request",
+		})
+	}
 
 	for _, payment := range paymentList {
 		if reservationId == payment.PaymentID {
@@ -107,7 +132,9 @@ func UpdateReservation(c *gin.Context) {
 	}
 	err = services.ReservationService.UpdateReservation(reservationId, &reservation)
 	if err != nil {
-		log.Println("Can not update reservation")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Could not update reservation",
+		})
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"message": "reservation confirmed!",

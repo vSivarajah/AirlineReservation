@@ -11,15 +11,15 @@ var (
 type reservationService struct{}
 
 type reservationServiceInterface interface {
-	CreateFlightDetails(*reservations.Reservation) bool
+	CreateReservation(*reservations.Reservation) bool
 	GetReservationDetails() reservations.Reservations
 	FindReservationById(int) (*reservations.Reservation, int, error)
 	UpdateReservation(int, *reservations.Reservation) error
 	DeleteReservation(int) int
 }
 
-func (s *reservationService) CreateFlightDetails(reservation *reservations.Reservation) bool {
-	return reservations.CreateFlightDetails(reservation)
+func (s *reservationService) CreateReservation(reservation *reservations.Reservation) bool {
+	return reservations.CreateReservation(reservation)
 }
 
 func (s *reservationService) GetReservationDetails() reservations.Reservations {
