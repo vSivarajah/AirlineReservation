@@ -51,3 +51,14 @@ curl -X GET localhost:8081/reservations | jq
 ````
 curl -X GET localhost:8081/test | jq
 ````
+
+
+
+# Cobra CLI
+
+## Init application
+````
+cobra init --pkg-name=gitHub.com/vSivarajah/AirlineReservation
+go install github.com/vSivarajah/AirlineReservation
+AirlineReservation erik
+````
