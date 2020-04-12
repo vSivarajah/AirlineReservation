@@ -74,7 +74,7 @@ func init() {
 	rootCmd.AddCommand(PrintTimeCmd)
 	rootCmd.AddCommand(StartServer)
 	rootCmd.AddCommand(GetFlights)
-	rootCmd.AddCommand(cmdPrint)
+	rootCmd.AddCommand(CmdPrint)
 	rootCmd.AddCommand(CreateReservation)
 }
 
@@ -139,11 +139,12 @@ var GetFlights = &cobra.Command{
 
 	},
 }
-var cmdPrint = &cobra.Command{
-	Use:   "create app",
+
+var CmdPrint = &cobra.Command{
+	Use:   "app",
 	Short: "Print anything to the screen",
 	Long: `print is for printing anything back to the screen.
-For many years people have printed back to the screen.`,
+  For many years people have printed back to the screen.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println("Please enter your first name")
 		reader := bufio.NewReader(os.Stdin)
@@ -156,7 +157,7 @@ For many years people have printed back to the screen.`,
 }
 
 var CreateReservation = &cobra.Command{
-	Use:   "create reservation",
+	Use:   "create",
 	Short: "Creates a flight reservation",
 	Run: func(cmd *cobra.Command, args []string) {
 		//fmt.Println("Please enter your first name")
