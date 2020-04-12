@@ -154,7 +154,6 @@ For many years people have printed back to the screen.`,
 		fmt.Println("You have entered: ", cmdString)
 	},
 }
-var in string
 
 var CreateReservation = &cobra.Command{
 	Use:   "create reservation",
