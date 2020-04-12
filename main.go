@@ -17,12 +17,11 @@ limitations under the License.
 package main
 
 import (
-	"github.com/vSivarajah/AirlineReservation/app"
 	"github.com/vSivarajah/AirlineReservation/cmd"
 )
 
 func main() {
-
-	app.StartApplication()
 	cmd.Execute()
+	//app.StartApplication()
+
 }

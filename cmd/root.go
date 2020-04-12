@@ -18,7 +18,10 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"os/exec"
 	"time"
+
+	"github.com/vsivarajah/AirlineReservation/app"
 
 	"github.com/spf13/cobra"
 
@@ -65,6 +68,8 @@ func init() {
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.AddCommand(PrintTimeCmd)
+	rootCmd.AddCommand(StartServer)
+	rootCmd.AddCommand(GetFlights)
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -99,5 +104,20 @@ var PrintTimeCmd = &cobra.Command{
 		now := time.Now()
 		prettyTime := now.Format(time.RubyDate)
 		println("Hey, the current time is ", prettyTime)
+	},
+}
+
+var StartServer = &cobra.Command{
+	Use: "start",
+	Run: func(cmd *cobra.Command, args []string) {
+		app.StartApplication()
+	},
+}
+
+var GetFlights = &cobra.Command{
+	Use: "get flights",
+	Run: func(cmd *cobra.Command, args []string) {
+		curl := exec.Command("curl", "localhost:8081/flights")
+		fmt.Println(curl.Output())
 	},
 }
