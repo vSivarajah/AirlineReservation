@@ -17,8 +17,10 @@ package cmd
 
 import (
 	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
 	"os"
-	"os/exec"
 	"time"
 
 	"github.com/vsivarajah/AirlineReservation/app"
@@ -117,7 +119,21 @@ var StartServer = &cobra.Command{
 var GetFlights = &cobra.Command{
 	Use: "get flights",
 	Run: func(cmd *cobra.Command, args []string) {
-		curl := exec.Command("curl", "localhost:8081/flights")
-		fmt.Println(curl.Output())
+		//curl := exec.Command("curl", "-O", "localhost:8081/flights")
+		//curl.Run()
+
+		response, err := http.Get("http://127.0.0.1:8081/flights")
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer response.Body.Close()
+
+		responseData, err := ioutil.ReadAll(response.Body)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Println(string(responseData))
+
 	},
 }
