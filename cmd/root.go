@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -23,6 +24,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/manifoldco/promptui"
 	"github.com/vsivarajah/AirlineReservation/app"
 
 	"github.com/spf13/cobra"
@@ -72,6 +74,8 @@ func init() {
 	rootCmd.AddCommand(PrintTimeCmd)
 	rootCmd.AddCommand(StartServer)
 	rootCmd.AddCommand(GetFlights)
+	rootCmd.AddCommand(cmdPrint)
+	rootCmd.AddCommand(CreateReservation)
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -119,8 +123,6 @@ var StartServer = &cobra.Command{
 var GetFlights = &cobra.Command{
 	Use: "get flights",
 	Run: func(cmd *cobra.Command, args []string) {
-		//curl := exec.Command("curl", "-O", "localhost:8081/flights")
-		//curl.Run()
 
 		response, err := http.Get("http://127.0.0.1:8081/flights")
 		if err != nil {
@@ -135,5 +137,44 @@ var GetFlights = &cobra.Command{
 
 		fmt.Println(string(responseData))
 
+	},
+}
+var cmdPrint = &cobra.Command{
+	Use:   "create app",
+	Short: "Print anything to the screen",
+	Long: `print is for printing anything back to the screen.
+For many years people have printed back to the screen.`,
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println("Please enter your first name")
+		reader := bufio.NewReader(os.Stdin)
+		cmdString, err := reader.ReadString('\n')
+		if err != nil {
+			fmt.Fprintln(os.Stderr, err)
+		}
+		fmt.Println("You have entered: ", cmdString)
+	},
+}
+var in string
+
+var CreateReservation = &cobra.Command{
+	Use:   "create reservation",
+	Short: "Creates a flight reservation",
+	Run: func(cmd *cobra.Command, args []string) {
+		//fmt.Println("Please enter your first name")
+
+		prompt := promptui.Select{
+			Label: "Select Day",
+			Items: []string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday",
+				"Saturday", "Sunday"},
+		}
+
+		_, result, err := prompt.Run()
+
+		if err != nil {
+			fmt.Printf("Prompt failed %v\n", err)
+			return
+		}
+
+		fmt.Printf("You choose %q\n", result)
 	},
 }
