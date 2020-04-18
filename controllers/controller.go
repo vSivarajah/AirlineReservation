@@ -18,7 +18,7 @@ func GetFlights(c *gin.Context) {
 	flights := services.FlightService.GetFlights()
 	fmt.Printf("%T\n", flights)
 	c.JSON(200, gin.H{
-		"message": flights,
+		"flights": flights,
 	})
 }
 

@@ -16,12 +16,14 @@ limitations under the License.
 package cmd
 
 import (
-	"bufio"
+	"bytes"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/manifoldco/promptui"
@@ -34,6 +36,26 @@ import (
 )
 
 var cfgFile string
+
+type ReservationCmd struct {
+	Id         int        `json:"id"`
+	Passenger  Passenger  `json:"passenger"`
+	FlightInfo FlightInfo `json:"flightinfo"`
+}
+
+type Passenger struct {
+	Firstname      string `json:firstname`
+	Lastname       string `json:lastname`
+	Passportnumber int    `json:passportnumber`
+	Dateofbirth    string `json:dateofbirth`
+}
+
+type FlightInfo struct {
+	FlightNumber      string `json:"flightnumber"`
+	OperatingAirlines string `json:"operatingairlines"`
+	SourceAirport     string `json:"sourceairport"`
+	TargetAirport     string `json:"targetairport"`
+}
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -76,6 +98,8 @@ func init() {
 	rootCmd.AddCommand(GetFlights)
 	rootCmd.AddCommand(CmdPrint)
 	rootCmd.AddCommand(CreateReservation)
+	rootCmd.AddCommand(greetCmd)
+	greetCmd.Flags().StringP("name", "n", "", "The name to use")
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -134,9 +158,7 @@ var GetFlights = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-
 		fmt.Println(string(responseData))
-
 	},
 }
 
@@ -146,18 +168,40 @@ var CmdPrint = &cobra.Command{
 	Long: `print is for printing anything back to the screen.
   For many years people have printed back to the screen.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("Please enter your first name")
-		reader := bufio.NewReader(os.Stdin)
-		cmdString, err := reader.ReadString('\n')
+		/*
+			input := []string{"firstname", "lastname", "passportnumber", "dateofbirth"}
+			for _, value := range input {
+				fmt.Printf("Please enter your %v: ", value)
+				str := bufio.NewReader(os.Stdin)
+				cmdString, err := str.ReadString('\n')
+				if err != nil {
+					fmt.Fprintln(os.Stderr, err)
+				}
+				fmt.Println("You have entered: ", cmdString)
+			}
+		*/
+
+		traveller := Passenger{"vignesh", "sivarajah", 12345, "301195"}
+		flights := FlightInfo{"BOEING777", "Emirates", "Oslo", "Cancun"}
+		reservation := ReservationCmd{15, traveller, flights}
+		booking, _ := json.Marshal(reservation)
+		req, err := http.NewRequest("POST", "http://127.0.0.1:8081/create", bytes.NewBuffer(booking))
 		if err != nil {
-			fmt.Fprintln(os.Stderr, err)
+			log.Fatal(err)
 		}
-		fmt.Println("You have entered: ", cmdString)
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer resp.Body.Close()
+
 	},
 }
 
 var CreateReservation = &cobra.Command{
-	Use:   "create",
+	Use:   "get",
 	Short: "Creates a flight reservation",
 	Run: func(cmd *cobra.Command, args []string) {
 		//fmt.Println("Please enter your first name")
@@ -176,5 +220,19 @@ var CreateReservation = &cobra.Command{
 		}
 
 		fmt.Printf("You choose %q\n", result)
+	},
+}
+
+var greetCmd = &cobra.Command{
+	Use:   "greet",
+	Short: "Prints a greet message",
+	Long:  `Prints a greet message`,
+	Run: func(cmd *cobra.Command, args []string) {
+		name := cmd.Flag("name")
+		if name.Value.String() == "" {
+			fmt.Printf("Hello World! %s\n", strings.Join(args, " "))
+		} else {
+			fmt.Printf("Hello %s, %s\n", name.Value.String(), strings.Join(args, " "))
+		}
 	},
 }
