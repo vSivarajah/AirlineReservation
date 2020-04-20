@@ -43,16 +43,16 @@ func DoesFlightExist(sourceairport string, targetairport string) bool {
 }
 
 // AssignFlightNumber assigns flight to reservation
-func AssignFlightNumber(sourceairport string, targetairport string) (string, string) {
+func AssignFlightNumber(sourceairport string, targetairport string) (string, string, int, int) {
 	flights := GetFlights()
 	for _, flight := range flights {
 		if flight.SourceAirport == sourceairport && flight.TargetAirport == targetairport {
 			if flight.NumSeats < flight.MaxSeats {
 				flight.NumSeats++
-				return flight.FlightNumber, flight.OperatingAirlines
+				return flight.FlightNumber, flight.OperatingAirlines, flight.MaxSeats, flight.NumSeats
 			} else {
 				log.Println("Flight is full")
-				return "full", ""
+				return "full", "", 0, 0
 			}
 		}
 	}
@@ -60,7 +60,7 @@ func AssignFlightNumber(sourceairport string, targetairport string) (string, str
 	if err != nil {
 		log.Fatal(err)
 	}
-	return "", string(value)
+	return "", string(value), 0, 0
 }
 
 // RemoveReservationFromFlight removes person from flight

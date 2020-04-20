@@ -9,7 +9,7 @@ var (
 type flightService struct{}
 
 type flightServiceInterface interface {
-	AssignFlightNumber(string, string) (string, string)
+	AssignFlightNumber(string, string) (string, string, int, int)
 	DoesFlightExist(string, string) bool
 	GetFlights() flights.Flights
 }
@@ -18,7 +18,7 @@ func (s *flightService) DoesFlightExist(sourceairport string, targetairport stri
 	return flights.DoesFlightExist(sourceairport, targetairport)
 }
 
-func (s *flightService) AssignFlightNumber(sourceairport string, targetairport string) (string, string) {
+func (s *flightService) AssignFlightNumber(sourceairport string, targetairport string) (string, string, int, int) {
 	return flights.AssignFlightNumber(sourceairport, targetairport)
 }
 

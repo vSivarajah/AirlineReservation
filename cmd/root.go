@@ -16,11 +16,7 @@ limitations under the License.
 package cmd
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"log"
-	"net/http"
 	"os"
 
 	"github.com/vsivarajah/AirlineReservation/app"
@@ -77,8 +73,6 @@ func init() {
 	// when this action is called directly.
 	rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
 	rootCmd.AddCommand(StartServer)
-	rootCmd.AddCommand(GetFlights)
-	rootCmd.AddCommand(CreateReservation)
 }
 
 // initConfig reads in config file and ENV variables if set.
@@ -111,45 +105,5 @@ var StartServer = &cobra.Command{
 	Use: "start",
 	Run: func(cmd *cobra.Command, args []string) {
 		app.StartApplication()
-	},
-}
-
-var GetFlights = &cobra.Command{
-	Use: "get flights",
-	Run: func(cmd *cobra.Command, args []string) {
-		flightDetails := flights.FlightDetails()
-		fmt.Println(flightDetails)
-	},
-}
-
-var CreateReservation = &cobra.Command{
-	Use:   "create",
-	Short: "Print anything to the screen",
-	Long: `print is for printing anything back to the screen.
-  For many years people have printed back to the screen.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		traveller := passenger.PassengerDetails()
-		sourceairport := "Oslo"
-		targetairport := "Cancun"
-		flightDetails := flights.FlightInfo{
-			SourceAirport: sourceairport,
-			TargetAirport: targetairport,
-		}
-
-		//flights := FlightInfo{"BOEING777", "Emirates", "Oslo", "Cancun", 2, 2}
-		reservation := ReservationCmd{traveller, flightDetails}
-		booking, _ := json.Marshal(reservation)
-		req, err := http.NewRequest("POST", "http://127.0.0.1:8081/create", bytes.NewBuffer(booking))
-		if err != nil {
-			log.Fatal(err)
-		}
-		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-
-		resp, err := http.DefaultClient.Do(req)
-		if err != nil {
-			log.Fatal(err)
-		}
-		defer resp.Body.Close()
-
 	},
 }

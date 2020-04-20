@@ -1,7 +1,7 @@
 package flights
 
 import (
-	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -12,7 +12,7 @@ type FlightInfo struct {
 	TargetAirport string `json:"targetairport"`
 }
 
-func FlightDetails() []FlightInfo {
+func FlightDetails() {
 	response, err := http.Get("http://127.0.0.1:8081/flights")
 	if err != nil {
 		log.Fatal(err)
@@ -24,11 +24,5 @@ func FlightDetails() []FlightInfo {
 		log.Fatal(err)
 	}
 
-	var data []FlightInfo
-
-	err = json.Unmarshal([]byte(responseData), &data)
-	if err != nil {
-		log.Fatal(err)
-	}
-	return data
+	fmt.Println(string(responseData))
 }

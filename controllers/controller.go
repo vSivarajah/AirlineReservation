@@ -18,11 +18,6 @@ func GetFlights(c *gin.Context) {
 	flights := services.FlightService.GetFlights()
 	fmt.Printf("%T\n", flights)
 	c.JSON(http.StatusOK, flights)
-	/*
-		c.JSON(200, gin.H{
-			"flights": flights,
-		})
-	*/
 }
 
 func GetReservationDetails(c *gin.Context) {
@@ -32,6 +27,16 @@ func GetReservationDetails(c *gin.Context) {
 	})
 }
 
+func GetReservation(c *gin.Context) {
+	id := c.Param("id")
+	reservationId, err := strconv.Atoi(id)
+	reservation, _, err := services.ReservationService.FindReservationById(reservationId)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err)
+	}
+	c.JSON(http.StatusOK, reservation)
+
+}
 func CreateReservation(c *gin.Context) {
 
 	log.Println("Creating new reservation")
@@ -47,7 +52,7 @@ func CreateReservation(c *gin.Context) {
 	}).Info("message")
 
 	if services.FlightService.DoesFlightExist(details.FlightInfo.SourceAirport, details.FlightInfo.TargetAirport) {
-		details.FlightInfo.FlightNumber, details.FlightInfo.OperatingAirlines = services.FlightService.AssignFlightNumber(details.FlightInfo.SourceAirport, details.FlightInfo.TargetAirport)
+		details.FlightInfo.FlightNumber, details.FlightInfo.OperatingAirlines, details.FlightInfo.MaxSeats, details.FlightInfo.NumSeats = services.FlightService.AssignFlightNumber(details.FlightInfo.SourceAirport, details.FlightInfo.TargetAirport)
 		details.IsValid = false
 
 		if details.FlightInfo.FlightNumber == "full" {

@@ -29,7 +29,13 @@ func main() {
 	//app.StartApplication()
 
 	goodMorningHandler := func(w http.ResponseWriter, req *http.Request) {
-		fmt.Fprintf(w, "Good morning! You are using verb: %s, URL: %s\n", req.Method, req.URL)
+		
+		_, err := fmt.Fprintf(w, "Good morning! You are using verb: %s, URL: %s\n", req.Method, req.URL)
+		if err != nil {
+			fmt.Println(http.StatusBadRequest)
+		}else{
+			fmt.Println(http.StatusOK)
+		}
 	}
 	http.HandleFunc("/goodmorning", goodMorningHandler)
 	log.Fatal(http.ListenAndServe(":1234", nil))
