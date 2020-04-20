@@ -17,11 +17,21 @@ limitations under the License.
 package main
 
 import (
+	"fmt"
+	"log"
+	"net/http"
+
 	"github.com/vSivarajah/AirlineReservation/cmd"
 )
 
 func main() {
 	cmd.Execute()
 	//app.StartApplication()
+
+	goodMorningHandler := func(w http.ResponseWriter, req *http.Request) {
+		fmt.Fprintf(w, "Good morning! You are using verb: %s, URL: %s\n", req.Method, req.URL)
+	}
+	http.HandleFunc("/goodmorning", goodMorningHandler)
+	log.Fatal(http.ListenAndServe(":1234", nil))
 
 }

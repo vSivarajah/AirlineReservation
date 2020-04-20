@@ -26,6 +26,7 @@ func CreateReservation(reservation *Reservation) bool {
 		log.Println("Reservation id exists")
 		return false
 	} else {
+		reservation.Id = getNextID()
 		reservationDetails = append(reservationDetails, reservation)
 		return true
 	}
@@ -71,4 +72,14 @@ func DeleteReservation(id int) int {
 		}
 	}
 	return -1
+}
+
+func getNextID() int {
+	if len(reservationDetails) < 1 {
+		return 1
+	} else {
+		lp := reservationDetails[len(reservationDetails)-1]
+		return lp.Id + 1
+	}
+
 }
