@@ -78,4 +78,5 @@ func CreateReservation(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 	defer resp.Body.Close()
+
 }

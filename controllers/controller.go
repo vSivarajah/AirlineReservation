@@ -34,6 +34,7 @@ func GetReservation(c *gin.Context) {
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
 	}
+	
 	c.JSON(http.StatusOK, reservation)
 
 }

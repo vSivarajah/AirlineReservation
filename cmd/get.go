@@ -1,11 +1,13 @@
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/vsivarajah/AirlineReservation/domain/reservations"
 
 	"github.com/spf13/cobra"
 	"github.com/vsivarajah/AirlineReservation/cmd/flights"
@@ -26,7 +28,7 @@ var (
 	getReservation = &cobra.Command{
 		Use:   "reservation",
 		Short: "Retrives a reservation for the given id",
-		Run:   GetReservationById,
+		Run:   GetReservation,
 	}
 )
 
@@ -43,21 +45,29 @@ func GetFlights(cmd *cobra.Command, args []string) {
 
 }
 
-func GetReservationById(cmd *cobra.Command, args []string) {
-
+func GetReservation(cmd *cobra.Command, args []string) {
 	id := cmd.Flag("id")
 	idValue, err := strconv.Atoi(id.Value.String())
-	url := fmt.Sprintf("http://127.0.0.1:8081/reservation/%d", idValue)
+	if err != nil {
+		log.Fatal("Could not convert to int", err)
+	}
+	reservation := GetReservationById(idValue)
+	fmt.Println(reservation)
+}
+
+func GetReservationById(id int) reservations.Reservation {
+
+	url := fmt.Sprintf("http://127.0.0.1:8081/reservation/%d", id)
 	fmt.Println(url)
 	response, err := http.Get(url)
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer response.Body.Close()
-
-	responseData, err := ioutil.ReadAll(response.Body)
+	reservation := reservations.Reservation{}
+	err = json.NewDecoder(response.Body).Decode(&reservation)
 	if err != nil {
-		log.Fatal(err)
+		panic(err)
 	}
-	fmt.Println(string(responseData))
+	return reservation
 }
