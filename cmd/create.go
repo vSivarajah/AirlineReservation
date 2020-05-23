@@ -20,10 +20,14 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
+
+	"github.com/vsivarajah/AirlineReservation/cmd/payments"
 
 	"github.com/spf13/cobra"
 	"github.com/vsivarajah/AirlineReservation/cmd/flights"
 	"github.com/vsivarajah/AirlineReservation/cmd/passenger"
+	"github.com/vsivarajah/AirlineReservation/cmd/reservations"
 )
 
 // createCmd represents the create command
@@ -38,11 +42,19 @@ var (
 		Short: "Creates a reservation",
 		Run:   CreateReservation,
 	}
+
+	createPayment = &cobra.Command{
+		Use:   "payment",
+		Short: "Makes a payment for given reservation",
+		Run:   CreatePayment,
+	}
 )
 
 func init() {
 	rootCmd.AddCommand(createCmd)
 	createCmd.AddCommand(createReservation)
+	createCmd.AddCommand(createPayment)
+	createPayment.Flags().Int("id", 0, "Specify id to retrieve your booking")
 
 	// Here you will define your flags and configuration settings.
 
@@ -65,7 +77,7 @@ func CreateReservation(cmd *cobra.Command, args []string) {
 	}
 
 	//flights := FlightInfo{"BOEING777", "Emirates", "Oslo", "Cancun", 2, 2}
-	reservation := ReservationCmd{traveller, flightDetails}
+	reservation := reservations.ReservationCmd{traveller, flightDetails}
 	booking, _ := json.Marshal(reservation)
 	req, err := http.NewRequest("POST", "http://127.0.0.1:8081/create", bytes.NewBuffer(booking))
 	if err != nil {
@@ -79,4 +91,37 @@ func CreateReservation(cmd *cobra.Command, args []string) {
 	}
 	defer resp.Body.Close()
 
+}
+
+func CreatePayment(cmd *cobra.Command, args []string) {
+
+	id := cmd.Flag("id")
+	idValue, err := strconv.Atoi(id.Value.String())
+	if err != nil {
+		log.Fatal("Could not convert to int", err)
+	}
+
+	//reservation := reservations.GetReservationById(idValue)
+
+	payment := payments.Payment{idValue}
+	makePayment, _ := json.Marshal(payment)
+	req, err := http.NewRequest("POST", "http://127.0.0.1:8081/payment/pay", bytes.NewBuffer(makePayment))
+	if err != nil {
+		log.Println("tester, går ikke inn her!")
+		log.Println(err)
+		return
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	defer resp.Body.Close()
+
+	err = reservations.UpdateReservation(idValue)
+	if err != nil {
+		log.Println("Could not update the reservation")
+		return
+	}
 }

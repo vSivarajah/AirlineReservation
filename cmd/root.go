@@ -31,10 +31,6 @@ import (
 
 var cfgFile string
 
-type ReservationCmd struct {
-	Passenger  passenger.Passenger `json:"passenger"`
-	FlightInfo flights.FlightInfo  `json:"flightinfo"`
-}
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{

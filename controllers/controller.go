@@ -29,12 +29,13 @@ func GetReservationDetails(c *gin.Context) {
 
 func GetReservation(c *gin.Context) {
 	id := c.Param("id")
-	reservationId, err := strconv.Atoi(id)
+	reservationId, _ := strconv.Atoi(id)
 	reservation, _, err := services.ReservationService.FindReservationById(reservationId)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, err)
+		return
 	}
-	
+
 	c.JSON(http.StatusOK, reservation)
 
 }
@@ -144,6 +145,7 @@ func UpdateReservation(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Could not update reservation",
 		})
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"message": "reservation confirmed!",

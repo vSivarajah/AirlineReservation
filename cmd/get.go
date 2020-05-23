@@ -1,16 +1,13 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
-	"net/http"
 	"strconv"
-
-	"github.com/vsivarajah/AirlineReservation/domain/reservations"
 
 	"github.com/spf13/cobra"
 	"github.com/vsivarajah/AirlineReservation/cmd/flights"
+	"github.com/vsivarajah/AirlineReservation/cmd/reservations"
 )
 
 var (
@@ -51,23 +48,9 @@ func GetReservation(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatal("Could not convert to int", err)
 	}
-	reservation := GetReservationById(idValue)
+	reservation, err := reservations.GetReservationById(idValue)
+	if err != nil {
+		log.Fatal("Could not fetch the reservation", err)
+	}
 	fmt.Println(reservation)
-}
-
-func GetReservationById(id int) reservations.Reservation {
-
-	url := fmt.Sprintf("http://127.0.0.1:8081/reservation/%d", id)
-	fmt.Println(url)
-	response, err := http.Get(url)
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer response.Body.Close()
-	reservation := reservations.Reservation{}
-	err = json.NewDecoder(response.Body).Decode(&reservation)
-	if err != nil {
-		panic(err)
-	}
-	return reservation
 }

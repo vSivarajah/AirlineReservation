@@ -1,6 +1,7 @@
 package reservations
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/vsivarajah/AirlineReservation/domain/flights"
@@ -43,12 +44,13 @@ func FindReservationById(id int) (*Reservation, int, error) {
 			return v, i, nil
 		}
 	}
-	return nil, -1, nil
+	return nil, -1, fmt.Errorf("Reservation not found!")
 }
 
 func UpdateReservation(id int, r *Reservation) error {
 	value, pos, err := FindReservationById(id)
 	if err != nil {
+		log.Println(err)
 		return err
 	}
 	value.Id = id
